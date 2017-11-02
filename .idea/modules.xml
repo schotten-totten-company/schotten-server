@@ -3,6 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/schotten-server.iml" filepath="$PROJECT_DIR$/schotten-server.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/schotten-server_main.iml" filepath="$PROJECT_DIR$/.idea/modules/schotten-server_main.iml" group="schotten-server" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/schotten-server_test.iml" filepath="$PROJECT_DIR$/.idea/modules/schotten-server_test.iml" group="schotten-server" />
     </modules>
   </component>
 </project>

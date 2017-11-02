@@ -11,6 +11,8 @@
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="schotten-server" target="1.9" />
+      <module name="schotten-server_main" target="1.9" />
+      <module name="schotten-server_test" target="1.9" />
     </bytecodeTargetLevel>
   </component>
 </project>
