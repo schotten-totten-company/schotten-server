@@ -1,4 +1,4 @@
-package org.rvlander.schotten;
+package org.rvlander.schotten.server;
 
 import org.zeromq.ZMQ;
 

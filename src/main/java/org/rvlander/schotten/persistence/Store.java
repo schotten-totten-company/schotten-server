@@ -2,17 +2,35 @@ package org.rvlander.schotten.persistence;
 
 import org.rvlander.schotten.encoding.Encoder;
 
-public abstract class Store<E extends Encoder> {
+public abstract class Store<T> {
 
-    protected abstract void storeNewMatch(KeyPair keyPair, Match m);
+    protected Encoder<T> encoder;
 
-    public KeyPair newGame(Match m) {
+    public Store(Encoder<T> encoder) {
+        this.encoder = encoder;
+    }
+
+    protected abstract void storeNewEncodedMatch(KeyPair keyPair, T encodedGame) throws KeyAlreadyPresentException;
+
+    public KeyPair newGame(Game game) {
         KeyPair keyPair = new KeyPair();
-        this.storeNewMatch(keyPair, m);
+        try {
+            this.storeNewEncodedMatch(keyPair, this.encoder.encode(game));
+        } catch (KeyAlreadyPresentException e) {
+            keyPair = this.newGame(game);
+        }
         return keyPair;
     }
 
-    public abstract void updateGame(Match m);
+    public void updateGame(Key key, Game game) throws GameNotFoundException {
+        this.updateEncodedGame(key, this.encoder.encode(game));
+    }
 
-    public abstract Match getGame(Key key);
+    public Game getGame(Key key) throws GameNotFoundException {
+       return this.encoder.decode(this.getEncodedGame(key)) ;
+    }
+
+    protected abstract void updateEncodedGame(Key key, T encodedGame) throws GameNotFoundException;
+
+    protected abstract T getEncodedGame(Key key) throws GameNotFoundException;
 }
