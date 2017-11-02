@@ -4,3 +4,5 @@
 .idea/libraries/*
 target/*
 .gradle/*
+build/*
+out/*
