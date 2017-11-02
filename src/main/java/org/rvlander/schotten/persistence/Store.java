@@ -17,6 +17,7 @@ public abstract class Store<T> {
         try {
             this.storeNewEncodedMatch(keyPair, this.encoder.encode(game));
         } catch (KeyAlreadyPresentException e) {
+            /* TODO: log issue */
             keyPair = this.newGame(game);
         }
         return keyPair;
