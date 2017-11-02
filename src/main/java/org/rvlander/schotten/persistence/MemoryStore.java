@@ -42,6 +42,7 @@ public class MemoryStore<T> extends Store<T> {
         if (game == null) {
             throw new GameNotFoundException();
         }
+        return game;
     }
 
     protected void updateEncodedGame(Key key, T game) throws GameNotFoundException{
