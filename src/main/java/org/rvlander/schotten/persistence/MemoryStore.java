@@ -5,51 +5,61 @@ import org.rvlander.schotten.encoding.Encoder;
 import java.util.HashMap;
 
 public class MemoryStore<T> extends Store<T> {
-    
-    public class BoxedGame {
-        public T game;
 
-        public BoxedGame(T game) {
-            this.game = game;
-        }
-    }
 
-    private HashMap<Key, BoxedGame> mapPlayerOne;
-    private HashMap<Key, BoxedGame> mapPlayerTwo;
+    private HashMap<GameKey, StoreRow<T>> mapGame;
+    private HashMap<PlayerKey, StoreRow<T>> mapPlayerOne;
+    private HashMap<PlayerKey, StoreRow<T>> mapPlayerTwo;
 
     public MemoryStore(Encoder<T> encoder) {
         super(encoder);
+        this.mapGame = new HashMap<>();
         this.mapPlayerOne = new HashMap<>();
         this.mapPlayerTwo = new HashMap<>();
     }
 
-    protected void storeNewEncodedMatch(KeyPair keyPair, T game)  throws KeyAlreadyPresentException {
-        BoxedGame gamePlayerOne = this.mapPlayerOne.get(keyPair.getKeyPlayerOne());
-        BoxedGame gamePlayerTwo = this.mapPlayerTwo.get(keyPair.getKeyPlayerTwo());
-        if(gamePlayerOne!=null || gamePlayerTwo!=null) {
+    protected StoreRow<T> storeNewMatch(StoreRow<T> storeRow) throws KeyAlreadyPresentException {
+        StoreRow game = this.mapGame.get(storeRow.getGameKey());
+        StoreRow gamePlayerOne = this.mapPlayerOne.get(storeRow.getPlayerOneKey());
+        StoreRow gamePlayerTwo = this.mapPlayerTwo.get(storeRow.getPlayerTwoKey());
+        if(game != null || gamePlayerOne!=null || gamePlayerTwo!=null) {
             throw new KeyAlreadyPresentException();
         }
-        BoxedGame newBoxedGame = new BoxedGame(game);
-        mapPlayerOne.put(keyPair.getKeyPlayerOne(), newBoxedGame);
-        mapPlayerTwo.put(keyPair.getKeyPlayerTwo(), newBoxedGame);
+        mapGame.put(storeRow.getGameKey(), storeRow);
+        mapPlayerOne.put(storeRow.getPlayerOneKey(), storeRow);
+        mapPlayerTwo.put(storeRow.getPlayerTwoKey(), storeRow);
+
+        return storeRow;
     }
 
-    private BoxedGame getBoxedGame(Key key)  throws GameNotFoundException{
-        BoxedGame game = this.mapPlayerOne.get(key);
-        if(game == null) {
-            game = this.mapPlayerTwo.get(key);
+    public StoreRow<T> updateStoredGame(PlayerKey key, T game) throws PlayerNotFoundException {
+        StoreRow<T> row = this.mapPlayerOne.get(key);
+        if(row == null) {
+            row = this.mapPlayerTwo.get(key);
         }
-        if (game == null) {
+        if (row == null) {
+            throw new PlayerNotFoundException();
+        }
+        row.setGame(game);
+        return row;
+    }
+
+    protected StoreRow<T> getStoreRow(PlayerKey key) throws PlayerNotFoundException {
+        StoreRow<T> row = this.mapPlayerOne.get(key);
+        if(row == null) {
+            row = this.mapPlayerTwo.get(key);
+        }
+        if (row == null) {
+            throw new PlayerNotFoundException();
+        }
+        return row;
+    }
+
+    protected StoreRow<T> getStoreRow(GameKey key) throws GameNotFoundException {
+        StoreRow<T> row = this.mapGame.get(key);
+        if (row == null) {
             throw new GameNotFoundException();
         }
-        return game;
-    }
-
-    protected void updateEncodedGame(Key key, T game) throws GameNotFoundException{
-        getBoxedGame(key).game = game;
-    }
-
-    protected T getEncodedGame(Key key) throws GameNotFoundException{
-        return getBoxedGame(key).game;
+        return row;
     }
 }
