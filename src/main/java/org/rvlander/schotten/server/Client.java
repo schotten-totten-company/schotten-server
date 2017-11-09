@@ -4,11 +4,11 @@ import com.boardgames.bastien.schotten_totten.model.BoardFromPlayerView;
 import org.rvlander.schotten.persistence.GameKey;
 import org.rvlander.schotten.persistence.PlayerKey;
 
-public class Client {
+public abstract class Client {
 
-    private ClientListener listener;
-    private PlayerKey playerKey;
-    private GameKey gameKey;
+    protected ClientListener listener;
+    protected PlayerKey playerKey;
+    protected GameKey gameKey;
 
     public Client(ClientListener listener) {
         this.listener = listener;
@@ -19,12 +19,9 @@ public class Client {
         assert(playerKey != null);
         assert(gameKey != null);
 
-        // send game usgin zero mq
+        System.out.println("Time to play");
     }
 
-    public void receivedFrame(byte[] frame) {
-        // process frame and call register or nextTurn
-    }
 
     public PlayerKey getPlayerKey() {
         return playerKey;

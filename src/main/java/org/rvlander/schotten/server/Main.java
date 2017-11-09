@@ -1,23 +1,29 @@
 package org.rvlander.schotten.server;
 
+import org.rvlander.schotten.encoding.DummyEncoder;
+import org.rvlander.schotten.persistence.MemoryStore;
+import org.rvlander.schotten.persistence.Store;
 import org.zeromq.ZContext;
 import org.zeromq.ZFrame;
 import org.zeromq.ZMQ;
 import org.zeromq.ZMsg;
 
-import java.util.ArrayList;
+import java.util.HashMap;
+
 
 public class Main {
 
     private final static String WORKER_READY = "\001"; //  Signals worker is ready
 
     public static void main(String[] args) {
+        ClientManager<DummyEncoder> clientManager = new ClientManager(new MemoryStore(new DummyEncoder()));
+
         ZContext ctx = new ZContext();
         ZMQ.Socket backend = ctx.createSocket(ZMQ.ROUTER);
         backend.bind("tcp://*:5555"); //  For clients
 
         //  Queue of available workers
-        ArrayList<ZFrame> workers = new ArrayList<ZFrame>();
+        HashMap<ZFrame, Client> workers = new HashMap();
 
         ZMQ.Poller poller = ctx.createPoller(2);
         poller.register(backend, ZMQ.Poller.POLLIN);
@@ -39,10 +45,23 @@ public class Main {
                 //  Use worker address for LRU routing
                 ZMsg msg = ZMsg.recvMsg(backend);
                 System.out.println(msg);
-                /*if (msg == null)
+                if (msg == null)
                     break; //  Interrupted
                 ZFrame address = msg.unwrap();
-                workers.add(address);
+                System.out.println(msg);
+                if(workers.get(address) == null && msg.size() > 2) {
+                   System.out.println("Client won't register dropping");
+                } else {
+                    if(msg.size() == 2) { //Clients wants to register
+                       ZClient client = new ZClient(clientManager, address, backend);
+                       client.register(msg);
+                       workers.put(address, client);
+                    } else if (msg.size() == 3) { // Clients want's to play
+
+                    } //Client sent garbage and wont get any response
+                };
+
+
 
                 //  Forward message to client if it's not a READY
                 ZFrame frame = msg.getFirst();
@@ -53,10 +72,10 @@ public class Main {
             }
         }
         //  When we're done, clean up properly
-        while (workers.size() > 0) {
+        /*while (workers.size() > 0) {
             ZFrame frame = workers.remove(0);
             frame.destroy();
-        }
+        }*/
         workers.clear();
         ctx.close();
     }

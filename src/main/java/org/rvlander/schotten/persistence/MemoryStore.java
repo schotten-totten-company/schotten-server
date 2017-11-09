@@ -22,12 +22,15 @@ public class MemoryStore<T> extends Store<T> {
         StoreRow game = this.mapGame.get(storeRow.getGameKey());
         StoreRow gamePlayerOne = this.mapPlayerOne.get(storeRow.getPlayerOneKey());
         StoreRow gamePlayerTwo = this.mapPlayerTwo.get(storeRow.getPlayerTwoKey());
-        if(game != null || gamePlayerOne!=null || gamePlayerTwo!=null) {
+        if(game != null || gamePlayerOne!=null || storeRow.getPlayerTwoKey() != null && gamePlayerTwo != null) {
             throw new KeyAlreadyPresentException();
         }
         mapGame.put(storeRow.getGameKey(), storeRow);
         mapPlayerOne.put(storeRow.getPlayerOneKey(), storeRow);
-        mapPlayerTwo.put(storeRow.getPlayerTwoKey(), storeRow);
+
+        if(storeRow.getPlayerTwoKey() != null) {
+            mapPlayerTwo.put(storeRow.getPlayerTwoKey(), storeRow);
+        }
 
         return storeRow;
     }
