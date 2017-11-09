@@ -69,15 +69,23 @@ public class ClientManager<T> implements ClientListener{
                     System.exit(-1);
                 }
 
-                switch (move.getType()) {
-                    case RECLAIM_MILESTONE:
-                        gameManager.reclaimMilestone(playerType, move.getMilestoneIndex());
-                        break;
-                    case PLAY_CARD:
-                        assert (move.getCardInHandIndex() != ClientMove.NOT_USED);
-                        gameManager.playerPlays(playerType, move.getCardInHandIndex(), move.getMilestoneIndex());
-                        gameManager.swapPlayingPlayer();
-                        break;
+                try {
+                    switch (move.getType()) {
+                        case RECLAIM_MILESTONE:
+                            gameManager.reclaimMilestone(playerType, move.getMilestoneIndex());
+                            break;
+                        case PLAY_CARD:
+                            assert (move.getCardInHandIndex() != ClientMove.NOT_USED);
+                            gameManager.playerPlays(playerType, move.getCardInHandIndex(), move.getMilestoneIndex());
+                            gameManager.swapPlayingPlayer();
+                            break;
+                    }
+                } catch (NotYourTurnException e) {
+                    // do nothing what would you want to do?
+                } catch(MilestoneSideMaxReachedException e) {
+                    playNextTurn(ClientErrorCode.INVALID_PLAY, row, null); // same player will be asked to play
+                } catch (EmptyDeckException e) {
+                    // I guess it can't happen ...
                 }
 
                 Game newGame = gameManager.getGame();
@@ -101,12 +109,6 @@ public class ClientManager<T> implements ClientListener{
             } catch (PlayerNotFoundException e) {
                 // should not happen
                 System.exit(-1);
-            } catch (NotYourTurnException e) {
-                // do nothing what would you want to do?
-            } catch(MilestoneSideMaxReachedException e) {
-                playNextTurn(ClientErrorCode.INVALID_PLAY, row, null); // same player will be asked to play
-            } catch (EmptyDeckException e) {
-                // I guess it can't happen ...
             }
         }
         //else we do nothing, client is not register: might be some attacker!
@@ -140,7 +142,7 @@ public class ClientManager<T> implements ClientListener{
                 }
             }
         } catch(NoPlayerException e) {
-            System.exit(-2)
+            System.exit(-2);
         }
     }
 

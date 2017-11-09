@@ -7,13 +7,11 @@ import org.zeromq.ZMsg;
 
 import java.util.ArrayList;
 
-public class Main
-{
+public class Main {
 
     private final static String WORKER_READY = "\001"; //  Signals worker is ready
 
-    public static void main(String[] args)
-    {
+    public static void main(String[] args) {
         ZContext ctx = new ZContext();
         ZMQ.Socket backend = ctx.createSocket(ZMQ.ROUTER);
         backend.bind("tcp://*:5555"); //  For clients
@@ -62,3 +60,4 @@ public class Main
         workers.clear();
         ctx.close();
     }
+}
