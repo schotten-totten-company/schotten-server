@@ -54,9 +54,10 @@ public class ZClient extends Client {
                             BoardFromPlayerView board) {
         super.processTurn(errorCode, playerKey, gameKey, board);
         ZMsg msg = new ZMsg();
-        msg.push(playerKey.getData());
-        msg.push(gameKey.getData());
-        msg.push(new ZFrame(encoder.encode(errorCode)));
+        msg.add(playerKey.getData());
+        msg.add(gameKey.getData());
+        msg.add(encoder.encode(errorCode));
+        msg.add(encoder.encode(board));
 
         msg.wrap(this.address);
 
