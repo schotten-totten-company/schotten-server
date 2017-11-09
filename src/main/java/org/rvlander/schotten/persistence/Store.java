@@ -1,5 +1,6 @@
 package org.rvlander.schotten.persistence;
 
+import com.boardgames.bastien.schotten_totten.model.Game;
 import org.rvlander.schotten.encoding.Encoder;
 
 public abstract class Store<T> {

@@ -1,6 +1,7 @@
 package org.rvlander.schotten.encoding;
 
-import org.rvlander.schotten.persistence.Game;
+
+import com.boardgames.bastien.schotten_totten.model.Game;
 
 public interface Encoder<T> {
     public T encode (Game game);

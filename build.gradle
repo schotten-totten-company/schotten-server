@@ -10,5 +10,6 @@ repositories {
 }
 
 dependencies {
+    compile project(':schotten-engine')
     compile 'org.zeromq:jeromq:0.4.3-SNAPSHOT'
 }

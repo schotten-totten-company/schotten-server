@@ -6,11 +6,14 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="schotten-server" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="schotten-engine_main" target="1.7" />
+      <module name="schotten-engine_test" target="1.7" />
       <module name="schotten-server" target="1.9" />
+      <module name="schotten-server_main" target="1.9" />
+      <module name="schotten-server_test" target="1.9" />
     </bytecodeTargetLevel>
   </component>
 </project>
