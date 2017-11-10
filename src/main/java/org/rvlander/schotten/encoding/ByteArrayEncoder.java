@@ -2,6 +2,7 @@ package org.rvlander.schotten.encoding;
 
 import com.boardgames.bastien.schotten_totten.model.*;
 import org.rvlander.schotten.server.ClientErrorCode;
+import org.rvlander.schotten.server.ClientMove;
 
 import java.util.List;
 
@@ -19,7 +20,7 @@ public class ByteArrayEncoder implements Encoder<byte []>{
     }
 
     @Override
-    public Game decode(byte[] encodedGame) {
+    public Game decodeGame(byte[] encodedGame) {
         return null;
     }
 
@@ -148,5 +149,26 @@ public class ByteArrayEncoder implements Encoder<byte []>{
         }
 
         target[offset] =  (byte)(color + number);
+    }
+
+
+    public ClientMove decodeClientMove(byte [] data) throws DecodingException {
+        if(data.length !=3) {
+            throw new DecodingException("Data has wrong size.");
+        }
+
+        int moveType = data[0];
+        int cardInHandIndex = data[1];
+        int milestoneIndex = data[2];
+
+        // Should we test bounds here?
+
+        if(moveType == 1) {
+            return ClientMove.createReclaimMilestoneMove(milestoneIndex);
+        } else if(moveType == 2){
+            return ClientMove.createPlayCardMove(cardInHandIndex, milestoneIndex);
+        } else {
+            throw new DecodingException("Move type is not known.");
+        }
     }
 }

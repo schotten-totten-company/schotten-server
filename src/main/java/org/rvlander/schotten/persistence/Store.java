@@ -13,6 +13,23 @@ public abstract class Store<T> {
 
     protected abstract StoreRow<T> storeNewMatch(StoreRow<T> storeRow) throws KeyAlreadyPresentException;
 
+    protected abstract StoreRow<T> getEmptySlotEncoded();
+
+    public StoreRow<Game> getEmptySlot() {
+        StoreRow<T> rowGame = this.getEmptySlotEncoded();
+        if(rowGame != null) {
+            StoreRow<T> newRowGame = null;
+            while(newRowGame == null) {
+                try{
+                    newRowGame = this.addPlayerTwoKeyToGame(rowGame.getGameKey(), new PlayerKey());
+                } catch(KeyAlreadyPresentException e){}
+            }
+            rowGame = newRowGame;
+            return new StoreRow(rowGame.getGameKey(), rowGame.getPlayerOneKey(), rowGame.getPlayerTwoKey(),this.encoder.decodeGame(rowGame.getGame()));
+        }
+        return null;
+    }
+
     public StoreRow<Game> newGame(Game game) {
         StoreRow<Game> rowGame;
         try {
@@ -31,17 +48,17 @@ public abstract class Store<T> {
             throw new GameAlreadyHasPlayerTwoException();
         }
         rowGame.setPlayerTwoKey(new PlayerKey());
-        return new StoreRow(rowGame.getGameKey(), rowGame.getPlayerOneKey(), rowGame.getPlayerTwoKey(),this.encoder.decode(rowGame.getGame()));
+        return new StoreRow(rowGame.getGameKey(), rowGame.getPlayerOneKey(), rowGame.getPlayerTwoKey(),this.encoder.decodeGame(rowGame.getGame()));
     }
 
     public StoreRow<Game> updateGame(PlayerKey key, Game game) throws PlayerNotFoundException {
         StoreRow<T> rowGame = this.updateStoredGame(key, this.encoder.encode(game));
-        return new StoreRow(rowGame.getGameKey(), rowGame.getPlayerOneKey(), rowGame.getPlayerTwoKey(),this.encoder.decode(rowGame.getGame()));
+        return new StoreRow(rowGame.getGameKey(), rowGame.getPlayerOneKey(), rowGame.getPlayerTwoKey(),this.encoder.decodeGame(rowGame.getGame()));
     }
 
     public StoreRow<Game> getGame(PlayerKey key) throws PlayerNotFoundException {
         StoreRow<T> rowGame = this.getStoreRow(key);
-        return new StoreRow(rowGame.getGameKey(), rowGame.getPlayerOneKey(), rowGame.getPlayerTwoKey(),this.encoder.decode(rowGame.getGame()));
+        return new StoreRow(rowGame.getGameKey(), rowGame.getPlayerOneKey(), rowGame.getPlayerTwoKey(),this.encoder.decodeGame(rowGame.getGame()));
     }
 
     protected abstract StoreRow<T> updateStoredGame(PlayerKey key, T encodedGame) throws PlayerNotFoundException;
@@ -49,4 +66,6 @@ public abstract class Store<T> {
     protected abstract StoreRow<T> getStoreRow(PlayerKey key) throws PlayerNotFoundException;
 
     protected abstract StoreRow<T> getStoreRow(GameKey key) throws GameNotFoundException;
+
+    protected abstract StoreRow<T> addPlayerTwoKeyToGame(GameKey gameKey, PlayerKey playerTwoKey) throws KeyAlreadyPresentException;
 }

@@ -65,4 +65,27 @@ public class MemoryStore<T> extends Store<T> {
         }
         return row;
     }
+
+    @Override
+    protected StoreRow<T> getEmptySlotEncoded() {
+        for(StoreRow<T> row: this.mapGame.values()) {
+            if(row.getPlayerTwoKey() == null) {
+                return row;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    protected StoreRow<T> addPlayerTwoKeyToGame(GameKey gameKey, PlayerKey playerTwoKey) throws KeyAlreadyPresentException {
+        StoreRow<T> row = this.mapGame.get(gameKey);
+        assert(row != null);
+        assert(row.getPlayerTwoKey() == null);
+        row.setPlayerTwoKey(playerTwoKey);
+        if(this.mapPlayerTwo.get(playerTwoKey) != null) {
+            throw new KeyAlreadyPresentException();
+        }
+        this.mapPlayerTwo.put(playerTwoKey, row);
+        return row;
+    }
 }

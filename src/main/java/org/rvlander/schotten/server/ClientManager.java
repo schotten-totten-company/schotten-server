@@ -17,7 +17,7 @@ public class ClientManager<T> implements ClientListener{
         this.store = store;
     }
 
-    public void register(Client client) {
+    public boolean register(Client client) {
 
         PlayerKey playerKey = client.getPlayerKey();
         GameKey gameKey = client.getGameKey();
@@ -27,8 +27,9 @@ public class ClientManager<T> implements ClientListener{
                 StoreRow row = store.getGame(playerKey);
                 clients.put(playerKey, client);
                 this.playNextTurn(ClientErrorCode.OK, row, null);
-                return;
+                return true;
             } catch(PlayerNotFoundException e) {
+                return false;
             }
         } else if(gameKey != null){
             try{
@@ -36,21 +37,32 @@ public class ClientManager<T> implements ClientListener{
                 client.setPlayerKey(row.getPlayerTwoKey());
                 clients.put(row.getPlayerTwoKey(), client);
                 this.playNextTurn(ClientErrorCode.OK, row, null);
-                return;
-            } catch(GameNotFoundException e){}
+                return true;
+            } catch(GameNotFoundException e){
+                return false;
+            }
             catch( GameAlreadyHasPlayerTwoException e) {
             }
-        } else { // both keys are null or provided keys where wrong => create new Game
+        } else { // both keys are null or provided keys where wrong => get the first empty game or create one
             try {
-                StoreRow row = store.newGame(new Game());
-                client.setPlayerKey(row.getPlayerOneKey());
+                PlayerKey rowPlayerKey = null;
+                StoreRow row = store.getEmptySlot();
+                if(row == null) {
+                    row = store.newGame(new Game());
+                    rowPlayerKey = row.getPlayerOneKey();
+                } else {
+                    rowPlayerKey = row.getPlayerTwoKey();
+                }
+
+                client.setPlayerKey(rowPlayerKey);
                 client.setGameKey(row.getGameKey());
-                clients.put(row.getPlayerOneKey(), client);
+                clients.put(rowPlayerKey, client);
                 this.playNextTurn(ClientErrorCode.OK, row, null);
             } catch(GameCreationException e) {
                 System.exit(-1);
             }
         }
+        return true;
     }
 
     public void nextMove(Client client, ClientMove move) {

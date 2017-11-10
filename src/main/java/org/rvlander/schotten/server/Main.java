@@ -8,7 +8,9 @@ import org.zeromq.ZFrame;
 import org.zeromq.ZMQ;
 import org.zeromq.ZMsg;
 
+import java.nio.charset.Charset;
 import java.util.HashMap;
+import java.util.Map;
 
 
 public class Main {
@@ -23,7 +25,7 @@ public class Main {
         backend.bind("tcp://*:5555"); //  For clients
 
         //  Queue of available workers
-        HashMap<ZFrame, Client> workers = new HashMap();
+        HashMap<ZFrame, ZClient> workers = new HashMap();
 
         ZMQ.Poller poller = ctx.createPoller(2);
         poller.register(backend, ZMQ.Poller.POLLIN);
@@ -48,18 +50,19 @@ public class Main {
                 if (msg == null)
                     break; //  Interrupted
                 ZFrame address = msg.unwrap();
-                System.out.println(msg);
-                if(workers.get(address) == null && msg.size() > 2) {
-                   System.out.println("Client won't register dropping");
-                } else {
-                    if(msg.size() == 2) { //Clients wants to register
-                       ZClient client = new ZClient(clientManager, address, backend);
-                       client.register(msg);
-                       workers.put(address, client);
-                    } else if (msg.size() == 3) { // Clients want's to play
+                if(msg.size() == 2) { //Clients wants to register
+                    ZClient client = new ZClient(clientManager, address.duplicate(), backend);
+                    client.register(msg);
+                    workers.put(address, client);
+                } else if (msg.size() == 3) { // Clients want's to play
+                    ZClient client = workers.get(address);
+                    if(client == null) {
+                        System.out.println("Client is not registered!!");
+                    } else {
+                        client.receivedMove(msg);
+                    }
+                } //Client sent garbage and wont get any response
 
-                    } //Client sent garbage and wont get any response
-                };
 
 
 

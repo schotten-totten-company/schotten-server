@@ -7,7 +7,7 @@ public class DummyEncoder implements Encoder<Game>{
     public Game encode (Game game) {
         return game;
     }
-    public Game decode (Game encodedGame) {
+    public Game decodeGame(Game encodedGame) {
         return encodedGame;
     }
 }

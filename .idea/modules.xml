@@ -7,9 +7,7 @@
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/1293974037/schotten-engine_main.iml" filepath="$PROJECT_DIR$/.idea/modules/1293974037/schotten-engine_main.iml" group="schotten-engine" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/1293974037/schotten-engine_test.iml" filepath="$PROJECT_DIR$/.idea/modules/1293974037/schotten-engine_test.iml" group="schotten-engine" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/-144253548/schotten-server_main.iml" filepath="$PROJECT_DIR$/.idea/modules/-144253548/schotten-server_main.iml" group="schotten-server" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/schotten-server_main.iml" filepath="$PROJECT_DIR$/.idea/modules/schotten-server_main.iml" group="schotten-server" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/-144253548/schotten-server_test.iml" filepath="$PROJECT_DIR$/.idea/modules/-144253548/schotten-server_test.iml" group="schotten-server" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/schotten-server_test.iml" filepath="$PROJECT_DIR$/.idea/modules/schotten-server_test.iml" group="schotten-server" />
     </modules>
   </component>
 </project>
