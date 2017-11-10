@@ -46,13 +46,13 @@ public class ByteArrayEncoder implements Encoder<byte []>{
     public byte[] encode(BoardFromPlayerView board) {
         byte [] encodedMilestone = new byte[BOARD_SIZE + HAND_SIZE];
         for (Milestone milestone: board.getMilestones()) {
-            this.encode(milestone, board.getPlayingPlayer(), encodedMilestone, 0);
+            this.encode(milestone, board.getPlayer(), encodedMilestone, 0);
         }
         this.encode(board.getHand(), encodedMilestone, BOARD_SIZE);
         return encodedMilestone;
     }
 
-    private void encode(Milestone milestone, PlayerType playingPlayer, byte[] target, int boardOffset) {
+    private void encode(Milestone milestone, PlayerType player, byte[] target, int boardOffset) {
         int column = milestone.getId();
         List<Card> p1Side = milestone.getPlayer1Side();
         List<Card> p2Side = milestone.getPlayer2Side();
@@ -61,14 +61,14 @@ public class ByteArrayEncoder implements Encoder<byte []>{
 
         PlayerType milestoneOwner = milestone.getCaptured();
 
-        target[columnOffset + 3] = (byte)(playingPlayer == milestoneOwner?  1 : (milestoneOwner == PlayerType.NONE ? 0 : 2));
+        target[columnOffset + 3] = (byte)(player == milestoneOwner?  1 : (milestoneOwner == PlayerType.NONE ? 0 : 2));
 
-        int p1RowOffset = playingPlayer == PlayerType.ONE ? 4 : 0;
+        int p1RowOffset = player == PlayerType.ONE ? 4 : 0;
         for (int i = 0; i < p1Side.size(); i++) {
             this.encode(p1Side.get(i), target, columnOffset + i + p1RowOffset);
         }
 
-        int p2RowOffset = playingPlayer == PlayerType.ONE ? 0 : 4;
+        int p2RowOffset = player == PlayerType.ONE ? 0 : 4;
         for (int i = 0; i < p2Side.size(); i++) {
             this.encode(p2Side.get(i), target, columnOffset + i + p2RowOffset);
         }

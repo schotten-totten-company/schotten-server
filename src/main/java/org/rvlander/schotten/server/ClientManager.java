@@ -74,9 +74,9 @@ public class ClientManager<T> implements ClientListener{
                 SimpleGameManager gameManager = new SimpleGameManager(row.getGame());
 
                 PlayerType playerType = PlayerType.ONE;
-                if(key == row.getPlayerTwoKey()) {
+                if(row.getPlayerTwoKey() != null && key.equals(row.getPlayerTwoKey())) {
                     playerType = PlayerType.TWO;
-                } else if(key != row.getPlayerOneKey()) {
+                } else if(!key.equals(row.getPlayerOneKey())) {
                     //we have a huge problem
                     System.exit(-1);
                 }
@@ -97,7 +97,7 @@ public class ClientManager<T> implements ClientListener{
                 } catch(MilestoneSideMaxReachedException e) {
                     playNextTurn(ClientErrorCode.INVALID_PLAY, row, null); // same player will be asked to play
                 } catch (EmptyDeckException e) {
-                    // I guess it can't happen ...
+                    gameManager.swapPlayingPlayer();
                 }
 
                 Game newGame = gameManager.getGame();
@@ -150,7 +150,7 @@ public class ClientManager<T> implements ClientListener{
 
                 if (cpt != null) {
                     cpt.processTurn(errorCode, nextPlayer, row.getGameKey(),
-                                row.getGame().getBoardFromPlayingPlayerView());
+                                row.getGame().getBoardFromPlayerView(truePlayerType));
                 }
             }
         } catch(NoPlayerException e) {
